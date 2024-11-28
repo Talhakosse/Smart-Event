@@ -8,8 +8,8 @@ def login_view(request):
 def register_view(request):
     return render(request, 'yazlab/register.html')
 
-def login_view(request):
+def home_page_view(request):
     return render(request, 'yazlab/home_page.html')
 
-def register_view(request):
-    return render(request, 'yazlab/forgot_password.html')
+def forgot_pass_view(request):
+    return render(request, 'yazlab/forgot_pass.html')
