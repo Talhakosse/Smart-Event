@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Giriş Sayfası</title>
+    <style>
+        /* Genel Sayfa Stili */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #ffcccb; /* Pembe arka plan */
+        }
+
+        /* Form Konteyneri */
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+
+        /* Başlık */
+        h2 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        /* Girdi Alanları */
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Giriş Yap Butonu */
+        input[type="submit"] {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Kayıt Ol Linki */
+        p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        p a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Giriş Yap</h2>
+    <form action="/login" method="post">
+        <label for="kullanici_adi">Kullanıcı Adı:</label>
+        <input type="text" id="kullanici_adi" name="kullanici_adi" required><br>
+        
+        <label for="sifre">Şifre:</label>
+        <input type="password" id="sifre" name="sifre" required><br>
+        
+        <input type="submit" value="Giriş Yap">
+    </form>
+    <p>Henüz bir hesabınız yok mu? <a href="/register">Kayıt Ol</a></p>
+    <p>Şifremi unuttum.   <a href="/forgot_password">Yenile</a></p>
+
+</div>
+
+</body>
+</html>

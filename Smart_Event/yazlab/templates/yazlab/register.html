@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayıt Formu</title>
+    <!-- Google Places API Anahtarınızı buraya ekleyin -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBP3bz0Tjl0ea105t9zeY_nUtpQz93Tq6c&libraries=places"></script>
+    <style>
+        /* Genel Sayfa Stili */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #ffcccb; /* Pembe arka plan */
+        }
+
+        /* Kayıt Formu Çerçevesi */
+        .form-container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        /* Tablo ve Girdi Alanları */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 0.5rem 0;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-top: 0.3rem;
+        }
+
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Profil Fotoğrafı Çerçevesi */
+        #profilFotoFrame {
+            text-align: center;
+            height: 120px;
+            line-height: 120px;
+            width: 120px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            float: right;
+            position: relative;
+            cursor: pointer;
+            margin: 1rem auto;
+        }
+
+        #profilFotoFrame input[type="file"] {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        #profilFotoFrame label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* İlgi Alanları Etiketlerinin Görünümü */
+        .tag {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        .tag .remove {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+    <!-- jQuery ve jQuery UI kütüphanelerini ekle -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+</head>
+<body>
+
+<div class="form-container">
+    <form name="register_form" action="/register" method="post" enctype="multipart/form-data">
+        <h2>Kayıt Formu</h2>
+        <table>
+            <tr>
+                <td colspan="2">
+                    <div id="profilFotoFrame">
+                        <label>Fotoğraf</label>
+                        <input type="file" name="profil_fotografi" accept="image/*" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Kullanıcı Adı *</td>
+                <td><input type="text" name="kullanici_adi" required /></td>
+            </tr>
+            <tr>
+                <td>Şifre *</td>
+                <td><input type="password" name="sifre" required /></td>
+            </tr>
+            <tr>
+                <td>Ad *</td>
+                <td><input type="text" name="ad" required /></td>
+            </tr>
+            <tr>
+                <td>Soyad *</td>
+                <td><input type="text" name="soyad" required /></td>
+            </tr>
+            <tr>
+                <td>Doğum Tarihi *</td>
+                <td><input type="date" name="dogum_tarihi" required /></td>
+            </tr>
+            <tr>
+                <td>Cinsiyet *</td>
+                <td>
+                    <input type="radio" name="cinsiyet" value="Erkek" required /> Erkek
+                    <input type="radio" name="cinsiyet" value="Kadın" required /> Kadın
+                </td>
+            </tr>
+            <tr>
+                <td>E-Posta Adresi *</td>
+                <td><input type="email" name="eposta" required /></td>
+            </tr>
+            <tr>
+                <td>Telefon *</td>
+                <td><input type="tel" name="telefon_no" placeholder="(___)(_______)" required /></td>
+            </tr>
+            <tr>
+                <td>Konum</td>
+                <td><input id="locationInput" type="text" name="konum" placeholder="Konum Seç" required /></td>
+            </tr>
+            <tr>
+                <td>İlgi Alanları</td>
+                <td>
+                    <input type="text" id="ilgi_alanlari" placeholder="İlgi alanlarınızı girin" autocomplete="off" />
+                    <div id="selectedTags"></div>
+                    <input type="hidden" name="ilgi_alanlari" id="ilgi_alanlari_hidden" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" value="Kayıt Ol" /></td>
+
+
+            </tr>
+
+        </table>
+    </form>
+    <p>Zaten bir hesabın var mı? <a href="/">Giriş Yap</a></p>
+
+</div>
+
+
+<script>
+    const tags = new Set();
+
+    // Etiket ekleme işlevi
+    function addTag(tag) {
+        if (!tags.has(tag) && tag.trim() !== "") {
+            tags.add(tag);
+            const tagElement = document.createElement("span");
+            tagElement.classList.add("tag");
+            tagElement.textContent = tag;
+            const removeIcon = document.createElement("span");
+            removeIcon.classList.add("remove");
+            removeIcon.textContent = "x";
+            removeIcon.onclick = () => {
+                tags.delete(tag);
+                tagElement.remove();
+                updateHiddenField();
+            };
+            tagElement.appendChild(removeIcon);
+            document.getElementById("selectedTags").appendChild(tagElement);
+            updateHiddenField();
+        }
+    }
+
+    // Gizli alanı güncelle
+    function updateHiddenField() {
+        document.getElementById("ilgi_alanlari_hidden").value = Array.from(tags).join(",");
+    }
+
+    // Enter tuşuyla etiket ekleme
+    document.getElementById("ilgi_alanlari").addEventListener("keypress", function(event) {
+        if (event.key === 'Enter' && this.value) {
+            addTag(this.value.trim());
+            this.value = "";
+            event.preventDefault();
+        }
+    });
+    function initAutocomplete() {
+        const locationInput = document.getElementById("locationInput");
+        const autocomplete = new google.maps.places.Autocomplete(locationInput);
+        autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
+    }
+    google.maps.event.addDomListener(window, 'load', initAutocomplete);
+</script>
+
+</body>
+</html>
