@@ -24,7 +24,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),  # Opsiyonel: Çıkış için,
+    path('', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
     path('home_page/', views.home_page_view, name='home_page'),
     path('forgot_pass/', views.forgot_pass_view, name='forgot_pass'),

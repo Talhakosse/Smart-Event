@@ -1,1 +1,12 @@
-Hello world
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ana Sayfa</title>
+</head>
+<body>
+    <h1>Hoş Geldiniz, {{ user.kullanici_adi }}!</h1>
+    <p>Bu, giriş sonrası görüntülenen ana sayfanızdır.</p>
+    <a href="{% url 'login' %}">Çıkış Yap</a>
+</body>
+</html>

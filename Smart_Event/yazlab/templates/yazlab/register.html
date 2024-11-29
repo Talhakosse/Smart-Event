@@ -79,16 +79,35 @@
         /* Profil Fotoğrafı Çerçevesi */
         #profilFotoFrame {
             text-align: center;
-            height: 120px;
-            line-height: 120px;
-            width: 120px;
-            border: 2px solid #ddd;
+            height: 150px;
+            width: 150px;
+            border: 2px dashed #ddd;
             border-radius: 10px;
-            float: right;
             position: relative;
             cursor: pointer;
             margin: 1rem auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
+
+        #profilFotoFrame img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
+
+        #profilFotoFrame label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
 
         #profilFotoFrame input[type="file"] {
             opacity: 0;
@@ -148,8 +167,9 @@
             <tr>
                 <td colspan="2">
                     <div id="profilFotoFrame">
-                        <label>Fotoğraf</label>
-                        <input type="file" name="profil_fotografi" accept="image/*" />
+                        <img id="profilFotoPreview" src="" alt="Fotoğrafınız" style="display: none; max-width: 100%; max-height: 100%; border-radius: 10px;" />
+                        <label id="profilFotoLabel">Fotoğraf</label>
+                        <input type="file" name="profil_fotografi" accept="image/*" onchange="showPreview(this)" />
                     </div>
                 </td>
             </tr>
@@ -205,7 +225,7 @@
             </tr>
         </table>
     </form>
-    <p>Zaten bir hesabın var mı? <a href="/login">Giriş Yap</a></p>
+    <p>Zaten bir hesabın var mı? <a href="/">Giriş Yap</a></p>
 </div>
 
 <script>
@@ -251,6 +271,30 @@
         autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
     }
     google.maps.event.addDomListener(window, 'load', initAutocomplete);
+
+
+    function showPreview(input) {
+        const preview = document.getElementById("profilFotoPreview");
+        const label = document.getElementById("profilFotoLabel");
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            // Dosya yüklendiğinde çalışır
+            reader.onload = function (e) {
+                preview.src = e.target.result; // Görselin URL'sini önizleme alanına ekle
+                preview.style.display = "block"; // Önizleme görüntüsünü göster
+                label.style.display = "none";  // "Fotoğraf Yükle" yazısını gizle
+            };
+
+            reader.readAsDataURL(input.files[0]); // Dosyayı URL'ye çevir
+        } else {
+            // Dosya seçimi iptal edilirse veya silinirse
+            preview.style.display = "none"; // Önizlemeyi gizle
+            label.style.display = "block"; // "Fotoğraf Yükle" yazısını göster
+        }
+    }
+
 </script>
 </body>
 </html>

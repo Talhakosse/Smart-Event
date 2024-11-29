@@ -79,7 +79,9 @@
 
 <div class="form-container">
     <h2>Giriş Yap</h2>
-    <form action="/login" method="post">
+    <form action="" method="post">
+        {% csrf_token %}
+
         <label for="kullanici_adi">Kullanıcı Adı:</label>
         <input type="text" id="kullanici_adi" name="kullanici_adi" required><br>
         
@@ -90,6 +92,18 @@
     </form>
     <p>Henüz bir hesabınız yok mu? <a href="/register">Kayıt Ol</a></p>
     <p>Şifremi unuttum.   <a href="/forgot_pass">Yenile</a></p>
+   
+   
+   
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
 
 </div>
 
