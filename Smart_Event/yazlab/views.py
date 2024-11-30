@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from .forms import KullaniciForm
 from .models import Kullanici
+from .models import Etkinlik
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
@@ -28,7 +29,8 @@ def login_view(request):
 
 @login_required
 def home_page_view(request):
-    return render(request, 'yazlab/home_page.html', {'user': request.user})
+    etkinlikler = Etkinlik.objects.all()
+    return render(request, 'yazlab/home_page.html', {'user': request.user ,'etkinlikler': etkinlikler})
 
 def forgot_pass_view(request):
     return render(request, 'yazlab/forgot_pass.html')
