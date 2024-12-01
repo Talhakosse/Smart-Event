@@ -107,19 +107,19 @@ def home_page_view(request):
     })
 # Profil Güncelleme (Opsiyonel)
 @login_required
-def profil_guncelle_view(request):
-    if request.method == "POST":
-        ilgi_alani_listesi = request.POST.getlist('ilgi_alanlari')
-        kullanici = request.user.profil
-        kullanici.ilgi_alanlari.clear()
-        for ilgi in ilgi_alani_listesi:
-            ilgi_alani_obj = IlgiAlani.objects.get(ad=ilgi)
-            kullanici.ilgi_alanlari.add(ilgi_alani_obj)
-        kullanici.save()
-        return redirect('home_page')
+# def profil_guncelle_view(request):
+#     if request.method == "POST":
+#         ilgi_alani_listesi = request.POST.getlist('ilgi_alanlari')
+#         kullanici = request.user.profil
+#         kullanici.ilgi_alanlari.clear()
+#         for ilgi in ilgi_alani_listesi:
+#             ilgi_alani_obj = IlgiAlani.objects.get(ad=ilgi)
+#             kullanici.ilgi_alanlari.add(ilgi_alani_obj)
+#         kullanici.save()
+#         return redirect('home_page')
 
-    ilgi_alanlari = IlgiAlani.objects.all()
-    return render(request, 'yazlab/profil_guncelle.html', {"ilgi_alanlari": ilgi_alanlari})
+#     ilgi_alanlari = IlgiAlani.objects.all()
+#     return render(request, 'yazlab/profil_guncelle.html', {"ilgi_alanlari": ilgi_alanlari})
 
 
 
