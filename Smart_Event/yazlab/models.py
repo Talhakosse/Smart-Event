@@ -26,7 +26,6 @@ class CustomUserManager(BaseUserManager):
         extra_fields['dogum_tarihi'] = None 
 
      return self.create_user(kullanici_adi, email, password, **extra_fields)
-
 class Kullanici(AbstractBaseUser, PermissionsMixin):
     kullanici_adi = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)
@@ -65,7 +64,6 @@ class Kullanici(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.kullanici_adi
-
 class Etkinlik(models.Model):
     ad = models.CharField(max_length=100)
     kategori = models.CharField(max_length=50) 
