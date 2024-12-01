@@ -12,6 +12,7 @@ from django.contrib import messages
 from .models import Kullanici, Etkinlik
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
+
 # Kullanıcı Girişi
 def login_view(request):
     if request.method == "POST":
@@ -37,6 +38,32 @@ def register_view(request):
         cinsiyet = request.POST.get("cinsiyet")
         ilgi_alanlari = request.POST.get("ilgi_alanlari")  # Serbest metin olarak alınıyor
 
+        # Kullanıcı adı ve e-posta duplicate kontrolü
+        if Kullanici.objects.filter(kullanici_adi=kullanici_adi).exists():
+            messages.error(request, "Bu kullanıcı adı zaten kayıtlı.")
+            return render(request, 'yazlab/register.html', {
+                'kullanici_adi': kullanici_adi,
+                'eposta': eposta,
+                'ad': ad,
+                'soyad': soyad,
+                'dogum_tarihi': dogum_tarihi,
+                'cinsiyet': cinsiyet,
+                'ilgi_alanlari': ilgi_alanlari,
+            })
+
+        if Kullanici.objects.filter(eposta=eposta).exists():
+            messages.error(request, "Bu e-posta adresi zaten kayıtlı.")
+            return render(request, 'yazlab/register.html', {
+                'kullanici_adi': kullanici_adi,
+                'eposta': eposta,
+                'ad': ad,
+                'soyad': soyad,
+                'dogum_tarihi': dogum_tarihi,
+                'cinsiyet': cinsiyet,
+                'ilgi_alanlari': ilgi_alanlari,
+            })
+
+        # Kullanıcı oluşturma
         kullanici = Kullanici.objects.create(
             kullanici_adi=kullanici_adi,
             password=make_password(sifre),
@@ -48,6 +75,8 @@ def register_view(request):
             ilgi_alanlari=ilgi_alanlari  # İlgi alanlarını kaydediyoruz
         )
         kullanici.save()
+
+        messages.success(request, "Kayıt başarıyla oluşturuldu. Giriş yapabilirsiniz.")
         return redirect('login')
 
     return render(request, 'yazlab/register.html')
