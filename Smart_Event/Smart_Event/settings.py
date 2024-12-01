@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-yv-as7!h@z2ezo1%xd#wng&8xnrq1_+wtu()gk#le$0p0sn*jo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -130,3 +130,11 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail için
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'talharamazanks@gmail.com'  # Gönderen e-posta adresi
+EMAIL_HOST_PASSWORD = 'qryc jznl vzii tvww'  # E-posta şifresi

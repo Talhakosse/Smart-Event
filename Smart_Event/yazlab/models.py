@@ -3,22 +3,22 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.contrib.auth.hashers import make_password
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, kullanici_adi, eposta, password=None, **extra_fields):
+    def create_user(self, kullanici_adi, email, password=None, **extra_fields):
         """
         Normal kullanıcı oluşturma.
         """
-        if not eposta:
+        if not email:
             raise ValueError("Kullanıcıların bir e-posta adresi olması gerekiyor.")
         if not kullanici_adi:
             raise ValueError("Kullanıcı adı gereklidir.")
 
-        eposta = self.normalize_email(eposta)
-        user = self.model(kullanici_adi=kullanici_adi, eposta=eposta, **extra_fields)
+        email = self.normalize_email(email)
+        user = self.model(kullanici_adi=kullanici_adi, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, kullanici_adi, eposta, password=None, **extra_fields):
+    def create_superuser(self, kullanici_adi, email, password=None, **extra_fields):
      extra_fields.setdefault('is_staff', True)
      extra_fields.setdefault('is_superuser', True)
 
@@ -26,12 +26,12 @@ class CustomUserManager(BaseUserManager):
      if 'dogum_tarihi' not in extra_fields:
         extra_fields['dogum_tarihi'] = None  # Boş bırakılmasını sağlar
 
-     return self.create_user(kullanici_adi, eposta, password, **extra_fields)
+     return self.create_user(kullanici_adi, email, password, **extra_fields)
 
 class Kullanici(AbstractBaseUser, PermissionsMixin):
     kullanici_adi = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)
-    eposta = models.EmailField(unique=True)
+    email = models.EmailField(unique=True)
     ad = models.CharField(max_length=50)
     soyad = models.CharField(max_length=50)
     dogum_tarihi = models.DateField(null=True, blank=True)
@@ -61,7 +61,7 @@ class Kullanici(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()  # Güncellenmiş yöneticiyi burada kullanıyoruz
 
     USERNAME_FIELD = 'kullanici_adi'
-    REQUIRED_FIELDS = ['eposta', 'ad', 'soyad']
+    REQUIRED_FIELDS = ['email', 'ad', 'soyad']
 
     def __str__(self):
         return self.kullanici_adi

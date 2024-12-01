@@ -6,5 +6,5 @@ class KullaniciForm(forms.ModelForm):
 
     class Meta:
         model = Kullanici
-        fields = ['kullanici_adi', 'password', 'eposta', 'ad', 'soyad', 'dogum_tarihi', 'cinsiyet', 'ilgi_alanlari']
+        fields = ['kullanici_adi', 'password', 'email', 'ad', 'soyad', 'dogum_tarihi', 'cinsiyet', 'ilgi_alanlari']
     

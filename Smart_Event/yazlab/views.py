@@ -31,7 +31,7 @@ def register_view(request):
     if request.method == "POST":
         kullanici_adi = request.POST.get("kullanici_adi")
         sifre = request.POST.get("sifre")
-        eposta = request.POST.get("eposta")
+        email = request.POST.get("email")
         ad = request.POST.get("ad")
         soyad = request.POST.get("soyad")
         dogum_tarihi = request.POST.get("dogum_tarihi")
@@ -43,7 +43,7 @@ def register_view(request):
             messages.error(request, "Bu kullanıcı adı zaten kayıtlı.")
             return render(request, 'yazlab/register.html', {
                 'kullanici_adi': kullanici_adi,
-                'eposta': eposta,
+                'email': email,
                 'ad': ad,
                 'soyad': soyad,
                 'dogum_tarihi': dogum_tarihi,
@@ -51,11 +51,11 @@ def register_view(request):
                 'ilgi_alanlari': ilgi_alanlari,
             })
 
-        if Kullanici.objects.filter(eposta=eposta).exists():
+        if Kullanici.objects.filter(email=email).exists():
             messages.error(request, "Bu e-posta adresi zaten kayıtlı.")
             return render(request, 'yazlab/register.html', {
                 'kullanici_adi': kullanici_adi,
-                'eposta': eposta,
+                'email': email,
                 'ad': ad,
                 'soyad': soyad,
                 'dogum_tarihi': dogum_tarihi,
@@ -67,7 +67,7 @@ def register_view(request):
         kullanici = Kullanici.objects.create(
             kullanici_adi=kullanici_adi,
             password=make_password(sifre),
-            eposta=eposta,
+            email=email,
             ad=ad,
             soyad=soyad,
             dogum_tarihi=dogum_tarihi,
@@ -123,10 +123,29 @@ def profil_guncelle_view(request):
 
 
 
-def forgot_pass_view(request):
-    return render(request, 'yazlab/forgot_pass.html')
 
 def logout_view(request):
     logout(request)
     messages.success(request, 'Başarıyla çıkış yaptınız.')
     return redirect('login')
+
+
+
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.urls import reverse_lazy
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
+    email_template_name = 'password_reset_email.html'
+    subject_template_name = 'password_reset_subject.txt'
+
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        user_model = get_user_model()
+        if not user_model.objects.filter(eposta=email).exists():  # `eposta` alanınızı kontrol edin
+            messages.error(self.request, "Bu e-posta sistemde kayıtlı değil.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
