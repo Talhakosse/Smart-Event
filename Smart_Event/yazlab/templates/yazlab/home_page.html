@@ -2,69 +2,24 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ana Sayfa</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-        }
-        .events-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 20px auto;
-        }
-        .event-card {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin: 10px;
-            padding: 15px;
-            width: 300px;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .event-card h2 {
-            margin: 0;
-            font-size: 1.2rem;
-            color: #333;
-        }
-        .event-card p {
-            color: #555;
-            font-size: 0.9rem;
-        }
-        .event-card a {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .event-card a:hover {
-            background-color: #45a049;
-        }
-    </style>
 </head>
 <body>
-    <h1 style="text-align: center;">Hoş Geldiniz!</h1>
-    <p style="text-align: center;">Aşağıdaki etkinliklere göz atabilirsiniz:</p>
+    <h1>Hoş Geldiniz, {{ request.user.kullanici_adi }}</h1>
+    <h2>İlgi Alanlarınıza Göre Önerilen Etkinlikler</h2>
 
-    <div class="events-container">
-        {% for etkinlik in etkinlikler %}
-        <div class="event-card">
-            <h2>{{ etkinlik.ad }}</h2>
-            <p>Kategori: {{ etkinlik.kategori }}</p>
-            <p>Tarih: {{ etkinlik.tarih }}</p>
-            <p>{{ etkinlik.aciklama|truncatewords:15 }}</p>
-            <a href="/event/{{ etkinlik.id }}">Detaylar</a>
-        </div>
-        {% empty %}
-        <p>Hiç etkinlik bulunamadı.</p>
-        {% endfor %}
-    </div>
+    {% if etkinlikler %}
+        <ul>
+            {% for etkinlik in etkinlikler %}
+            <li>
+                <strong>{{ etkinlik.ad }}</strong> - {{ etkinlik.kategori }}
+                <p>{{ etkinlik.aciklama }}</p>
+                <p>Tarih: {{ etkinlik.tarih }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>İlgi alanlarınıza uygun etkinlik bulunamadı.</p>
+    {% endif %}
 </body>
 </html>

@@ -1,31 +1,76 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.hashers import make_password
 
-class Kullanici(models.Model):
+class CustomUserManager(BaseUserManager):
+    def create_user(self, kullanici_adi, eposta, password=None, **extra_fields):
+        """
+        Normal kullanıcı oluşturma.
+        """
+        if not eposta:
+            raise ValueError("Kullanıcıların bir e-posta adresi olması gerekiyor.")
+        if not kullanici_adi:
+            raise ValueError("Kullanıcı adı gereklidir.")
+
+        eposta = self.normalize_email(eposta)
+        user = self.model(kullanici_adi=kullanici_adi, eposta=eposta, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, kullanici_adi, eposta, password=None, **extra_fields):
+     extra_fields.setdefault('is_staff', True)
+     extra_fields.setdefault('is_superuser', True)
+
+    # Varsayılan bir dogum_tarihi ekleyin veya kontrol edin
+     if 'dogum_tarihi' not in extra_fields:
+        extra_fields['dogum_tarihi'] = None  # Boş bırakılmasını sağlar
+
+     return self.create_user(kullanici_adi, eposta, password, **extra_fields)
+
+class Kullanici(AbstractBaseUser, PermissionsMixin):
     kullanici_adi = models.CharField(max_length=150, unique=True)
-    sifre = models.CharField(max_length=128)  # Şifreyi hashlemeden saklamak için
+    password = models.CharField(max_length=128)
     eposta = models.EmailField(unique=True)
-    konum = models.CharField(max_length=255, null=True, blank=True)
-    ilgi_alanlari = models.TextField(null=True, blank=True)
     ad = models.CharField(max_length=50)
     soyad = models.CharField(max_length=50)
-    dogum_tarihi = models.DateField()
-    cinsiyet = models.CharField(max_length=10)
+    dogum_tarihi = models.DateField(null=True, blank=True)
+    cinsiyet = models.CharField(max_length=10, null=True, blank=True)
     telefon_no = models.CharField(max_length=15, null=True, blank=True)
     profil_fotografi = models.ImageField(upload_to='profil_fotograflari/', null=True, blank=True)
+    ilgi_alanlari = models.TextField(null=True, blank=True)
 
-    def __str1__(self):
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='kullanici_groups',  # Çakışmayı önlemek için related_name ekleniyor
+        blank=True,
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+        verbose_name='groups',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='kullanici_permissions',  # Çakışmayı önlemek için related_name ekleniyor
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name='user permissions',
+    )
+
+    objects = CustomUserManager()  # Güncellenmiş yöneticiyi burada kullanıyoruz
+
+    USERNAME_FIELD = 'kullanici_adi'
+    REQUIRED_FIELDS = ['eposta', 'ad', 'soyad']
+
+    def __str__(self):
         return self.kullanici_adi
 
 class Etkinlik(models.Model):
-    id = models.AutoField(primary_key=True)
     ad = models.CharField(max_length=100)
-    kategori = models.CharField(max_length=50)
+    kategori = models.CharField(max_length=50)  # Kategori adı: örneğin, "spor", "teknoloji"
     tarih = models.DateField()
     aciklama = models.TextField()
 
-    class Meta:
-        db_table = "yazlab_etkinlik"
-    
     def __str__(self):
         return self.ad
-
