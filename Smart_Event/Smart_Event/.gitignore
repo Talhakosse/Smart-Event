@@ -1,0 +1,6 @@
+# Python derleme dosyaları
+*.pyc
+__pycache__/
+
+# Ortam dosyaları
+media/

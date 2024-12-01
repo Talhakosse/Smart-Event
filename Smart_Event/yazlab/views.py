@@ -136,7 +136,6 @@ def create_event_view(request):
     return render(request, 'yazlab/create_event.html', {'form': form})
 
 from django.contrib.auth.views import PasswordResetView
-from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.urls import reverse_lazy
 
@@ -147,9 +146,6 @@ class CustomPasswordResetView(PasswordResetView):
     subject_template_name = 'password_reset_subject.txt'
 
     def form_valid(self, form):
-        email = form.cleaned_data.get('email')
-        user_model = get_user_model()
-        if not user_model.objects.filter(eposta=email).exists():  # `eposta` alanınızı kontrol edin
-            messages.error(self.request, "Bu e-posta sistemde kayıtlı değil.")
-            return self.form_invalid(form)
+        # Her durumda kullanıcıya genel bir mesaj göster
+        messages.info(self.request, "Eğer bu e-posta adresi sistemde kayıtlıysa, şifre sıfırlama bağlantısı gönderilecektir.")
         return super().form_valid(form)
