@@ -34,6 +34,8 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='yazlab/password_reset_confirm.html'), name='password_reset_confirm'),
     path('reset_done/', auth_views.PasswordResetCompleteView.as_view(template_name='yazlab/password_reset_complete.html'), name='password_reset_complete'),
     path('create_event/', views.create_event_view, name='create_event'),
+    path('event/<int:event_id>/', views.event_detail_view, name='event_detail'),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

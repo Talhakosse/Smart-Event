@@ -13,8 +13,14 @@ from .models import Kullanici, Etkinlik
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from .forms import EtkinlikForm
+from django.shortcuts import get_object_or_404
+from difflib import SequenceMatcher
 
 # Kullanıcı Girişi
+def is_similar(keyword, text):
+    similarity_ratio = SequenceMatcher(None, keyword, text).ratio()
+    return similarity_ratio > 0.7  # %70 benzerlik oranı
+
 def login_view(request):
     if request.method == "POST":
         kullanici_adi = request.POST.get("kullanici_adi")
@@ -98,25 +104,25 @@ def home_page_view(request):
     # Giriş yapan kullanıcı
     kullanici = request.user
 
-    # Kullanıcının ilgi alanlarını analiz et
-    if kullanici.ilgi_alanlari:
-        ilgi_alanlari = [kelime.strip().lower() for kelime in kullanici.ilgi_alanlari.split(",")]  # Virgülle ayrılmışsa
-        
-        # İlgi alanlarına uygun etkinlikleri filtrele
-        q_objects = Q()  # Boş bir Q nesnesi oluştur
-        for kelime in ilgi_alanlari:
-            q_objects |= Q(kategori__icontains=kelime) | Q(aciklama__icontains=kelime)
-        
-        # Tüm eşleşen etkinlikleri al
-        etkinlikler = Etkinlik.objects.filter(q_objects).distinct()
-    else:
-        etkinlikler = Etkinlik.objects.none()  # Eğer ilgi alanı yoksa boş liste döndür
+    if kullanici.ilgi_alanlari and kullanici.ilgi_alanlari.strip():
+        ilgi_alanlari = [kelime.strip().lower() for kelime in kullanici.ilgi_alanlari.split(",") if kelime.strip()]
+        etkinlikler = []
 
-    # Etkinlikleri şablona gönder
+        for etkinlik in Etkinlik.objects.all():
+            # Açıklama ve kategoriyi kelimelere ayır
+            metin = f"{etkinlik.kategori} {etkinlik.aciklama} {etkinlik.ad}".lower().split()
+            for kelime in ilgi_alanlari:
+                if any(is_similar(kelime, text) for text in metin):
+                    etkinlikler.append(etkinlik)
+                    break  # Eşleşme bulunduktan sonra devam etme
+
+        etkinlikler = list(set(etkinlikler))  # Tekrar edenleri kaldır
+    else:
+        etkinlikler = Etkinlik.objects.none()
+
     return render(request, 'yazlab/home_page.html', {
         'etkinlikler': etkinlikler,
     })
-
 def logout_view(request):
     logout(request)
     messages.success(request, 'Başarıyla çıkış yaptınız.')
@@ -135,6 +141,14 @@ def create_event_view(request):
         form = EtkinlikForm()
     return render(request, 'yazlab/create_event.html', {'form': form})
 
+def event_detail_view(request, event_id):
+    etkinlik = get_object_or_404(Etkinlik, id=event_id)  # `Etkinlik` modelini kullandığınızı varsayıyorum
+    if request.method == 'POST':
+        # Kullanıcı etkinliğe katılmak istediğinde
+        etkinlik.katilimcilar.add(request.user)  # Katılım eklemesi yapılıyor
+        etkinlik.save()
+        messages.success(request, "Etkinliğe başarıyla katıldınız!")
+    return render(request, 'yazlab/event_detail.html', {'etkinlik': etkinlik})
 from django.contrib.auth.views import PasswordResetView
 from django.contrib import messages
 from django.urls import reverse_lazy

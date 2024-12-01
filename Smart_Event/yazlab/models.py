@@ -39,6 +39,7 @@ class Kullanici(AbstractBaseUser, PermissionsMixin):
     profil_fotografi = models.ImageField(upload_to='profil_fotograflari/', null=True, blank=True)
     ilgi_alanlari = models.TextField(null=True, blank=True)
     konum = models.CharField(max_length=255, blank=True, null=True)
+    
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -71,6 +72,6 @@ class Etkinlik(models.Model):
     tarih = models.DateField()
     aciklama = models.TextField()
     # created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
-
+    # katilimcilar = models.ManyToManyField(User, related_name='katildigi_etkinlikler', blank=True)
     def __str__(self):
         return self.ad

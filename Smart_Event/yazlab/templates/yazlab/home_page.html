@@ -100,19 +100,21 @@
         </a>
     </header>
     <main>
-        <h1>Hoş Geldiniz, {{ request.user.kullanici_adi }}</h1>
+        <h1>Hoş Geldin, {{ request.user.kullanici_adi }}</h1>
 
         <p>
             <a href="/create_event" style="padding: 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Yeni Etkinlik Oluştur</a>
         </p>
 
-        <h2>İlgi Alanlarınıza Göre Önerilen Etkinlikler</h2>
+        <h2>Sana Özel Etkinlikler</h2>
 
         {% if etkinlikler %}
             <ul>
                 {% for etkinlik in etkinlikler %}
                 <li>
-                    <strong>{{ etkinlik.ad }}</strong> - {{ etkinlik.kategori }}
+                    <a href="{% url 'event_detail' event_id=etkinlik.id %}">
+                        <strong>{{ etkinlik.ad }}</strong> - {{ etkinlik.kategori }}
+                    </a>
                     <p>{{ etkinlik.aciklama }}</p>
                     <p>Tarih: {{ etkinlik.tarih }}</p>
                 </li>
