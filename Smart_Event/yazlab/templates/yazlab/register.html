@@ -5,7 +5,7 @@
     <title>Kayıt Formu</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBP3bz0Tjl0ea105t9zeY_nUtpQz93Tq6c&libraries=places"></script>
     <style>
-        /* Genel Sayfa Stili */
+       
         body {
             display: flex;
             align-items: center;
@@ -13,10 +13,10 @@
             min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #ffcccb; /* Pembe arka plan */
+            background-color: #ffcccb; 
         }
 
-        /* Kayıt Formu Çerçevesi */
+        
         .form-container {
             background-color: #ffffff;
             padding: 2rem;
@@ -31,7 +31,7 @@
             margin-bottom: 1rem;
         }
 
-        /* Tablo ve Girdi Alanları */
+       
         table {
             width: 100%;
             border-collapse: collapse;
@@ -76,7 +76,7 @@
             background-color: #45a049;
         }
 
-        /* Profil Fotoğrafı Çerçevesi */
+        
         #profilFotoFrame {
             text-align: center;
             height: 150px;
@@ -129,7 +129,7 @@
             font-size: 0.9rem;
         }
 
-        /* İlgi Alanları Etiketlerinin Görünümü */
+       
         .tag {
             display: inline-block;
             background-color: #4CAF50;
@@ -150,7 +150,7 @@
 <body>
 
 <div class="form-container">
-    <!-- Mesajları göster -->
+    
     {% if messages %}
     <ul>
         {% for message in messages %}
@@ -159,7 +159,7 @@
     </ul>
     {% endif %}
 
-    <!-- Form -->
+    
     <form name="register_form" action="{% url 'register' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <h2>Kayıt Formu</h2>
@@ -231,7 +231,7 @@
 <script>
     const tags = new Set();
 
-    // Etiket ekleme işlevi
+    
     function addTag(tag) {
         if (!tags.has(tag) && tag.trim() !== "") {
             tags.add(tag);
@@ -252,12 +252,12 @@
         }
     }
 
-    // Gizli alanı güncelle
+    
     function updateHiddenField() {
         document.getElementById("ilgi_alanlari_hidden").value = Array.from(tags).join(",");
     }
 
-    // Enter tuşuyla etiket ekleme
+   
     document.getElementById("ilgi_alanlari").addEventListener("keypress", function(event) {
         if (event.key === 'Enter' && this.value) {
             addTag(this.value.trim());
@@ -280,18 +280,17 @@
         if (input.files && input.files[0]) {
             const reader = new FileReader();
 
-            // Dosya yüklendiğinde çalışır
+            
             reader.onload = function (e) {
-                preview.src = e.target.result; // Görselin URL'sini önizleme alanına ekle
-                preview.style.display = "block"; // Önizleme görüntüsünü göster
-                label.style.display = "none";  // "Fotoğraf Yükle" yazısını gizle
+                preview.src = e.target.result; 
+                preview.style.display = "block"; 
+                label.style.display = "none";  
             };
 
-            reader.readAsDataURL(input.files[0]); // Dosyayı URL'ye çevir
-        } else {
-            // Dosya seçimi iptal edilirse veya silinirse
-            preview.style.display = "none"; // Önizlemeyi gizle
-            label.style.display = "block"; // "Fotoğraf Yükle" yazısını göster
+            reader.readAsDataURL(input.files[0]);
+          
+            preview.style.display = "none"; 
+            label.style.display = "block"; 
         }
     }
 

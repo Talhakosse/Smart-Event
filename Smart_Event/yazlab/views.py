@@ -16,10 +16,9 @@ from .forms import EtkinlikForm
 from django.shortcuts import get_object_or_404
 from difflib import SequenceMatcher
 
-# Kullanıcı Girişi
 def is_similar(keyword, text):
     similarity_ratio = SequenceMatcher(None, keyword, text).ratio()
-    return similarity_ratio > 0.7  # %70 benzerlik oranı
+    return similarity_ratio > 0.5
 
 def login_view(request):
     if request.method == "POST":
@@ -33,7 +32,6 @@ def login_view(request):
             messages.error(request, "Kullanıcı adı veya şifre hatalı.")
     return render(request, 'yazlab/login.html')
 
-# Kullanıcı Kaydı
 def register_view(request):
     if request.method == "POST":
         kullanici_adi = request.POST.get("kullanici_adi")
@@ -43,12 +41,11 @@ def register_view(request):
         soyad = request.POST.get("soyad")
         dogum_tarihi = request.POST.get("dogum_tarihi")
         cinsiyet = request.POST.get("cinsiyet")
-        ilgi_alanlari = request.POST.get("ilgi_alanlari")  # Serbest metin olarak alınıyor
+        ilgi_alanlari = request.POST.get("ilgi_alanlari")  
         telefon_no =  request.POST.get("telefon_no") 
         konum = request.POST.get("konum")
         profil_fotografi = request.FILES.get("profil_fotografi")
 
-        # Kullanıcı adı ve e-posta duplicate kontrolü
         if Kullanici.objects.filter(kullanici_adi=kullanici_adi).exists():
             messages.error(request, "Bu kullanıcı adı zaten kayıtlı.")
             return render(request, 'yazlab/register.html', {
@@ -77,7 +74,6 @@ def register_view(request):
                 'konum': konum,
             })
 
-        # Kullanıcı oluşturma
         kullanici = Kullanici.objects.create(
             kullanici_adi=kullanici_adi,
             password=make_password(sifre),
@@ -87,9 +83,9 @@ def register_view(request):
             dogum_tarihi=dogum_tarihi,
             cinsiyet=cinsiyet,
             ilgi_alanlari=ilgi_alanlari,
-            telefon_no=telefon_no,  # Telefon numarası kaydediliyor
-            konum=konum,  # Konum kaydediliyor
-            profil_fotografi=profil_fotografi  # İlgi alanlarını kaydediyoruz
+            telefon_no=telefon_no, 
+            konum=konum,  
+            profil_fotografi=profil_fotografi  
         )
         kullanici.save()
 
@@ -101,7 +97,7 @@ def register_view(request):
 @login_required
 @login_required
 def home_page_view(request):
-    # Giriş yapan kullanıcı
+    
     kullanici = request.user
 
     if kullanici.ilgi_alanlari and kullanici.ilgi_alanlari.strip():
@@ -109,14 +105,14 @@ def home_page_view(request):
         etkinlikler = []
 
         for etkinlik in Etkinlik.objects.all():
-            # Açıklama ve kategoriyi kelimelere ayır
+           
             metin = f"{etkinlik.kategori} {etkinlik.aciklama} {etkinlik.ad}".lower().split()
             for kelime in ilgi_alanlari:
                 if any(is_similar(kelime, text) for text in metin):
                     etkinlikler.append(etkinlik)
-                    break  # Eşleşme bulunduktan sonra devam etme
+                    break  
 
-        etkinlikler = list(set(etkinlikler))  # Tekrar edenleri kaldır
+        etkinlikler = list(set(etkinlikler))  
     else:
         etkinlikler = Etkinlik.objects.none()
 
@@ -134,18 +130,17 @@ def create_event_view(request):
         form = EtkinlikForm(request.POST)
         if form.is_valid():
             etkinlik = form.save(commit=False)
-            etkinlik.created_by = request.user  # Etkinliği oluşturan kullanıcıyı kaydet
+            etkinlik.created_by = request.user 
             etkinlik.save()
-            return redirect('home_page')  # Etkinlik oluşturulduktan sonra ana sayfaya yönlendirme
+            return redirect('home_page') 
     else:
         form = EtkinlikForm()
     return render(request, 'yazlab/create_event.html', {'form': form})
 
 def event_detail_view(request, event_id):
-    etkinlik = get_object_or_404(Etkinlik, id=event_id)  # `Etkinlik` modelini kullandığınızı varsayıyorum
+    etkinlik = get_object_or_404(Etkinlik, id=event_id)  
     if request.method == 'POST':
-        # Kullanıcı etkinliğe katılmak istediğinde
-        etkinlik.katilimcilar.add(request.user)  # Katılım eklemesi yapılıyor
+        etkinlik.katilimcilar.add(request.user) 
         etkinlik.save()
         messages.success(request, "Etkinliğe başarıyla katıldınız!")
     return render(request, 'yazlab/event_detail.html', {'etkinlik': etkinlik})
@@ -160,6 +155,5 @@ class CustomPasswordResetView(PasswordResetView):
     subject_template_name = 'password_reset_subject.txt'
 
     def form_valid(self, form):
-        # Her durumda kullanıcıya genel bir mesaj göster
         messages.info(self.request, "Eğer bu e-posta adresi sistemde kayıtlıysa, şifre sıfırlama bağlantısı gönderilecektir.")
         return super().form_valid(form)

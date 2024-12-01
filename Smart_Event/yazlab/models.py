@@ -21,9 +21,9 @@ class CustomUserManager(BaseUserManager):
      extra_fields.setdefault('is_staff', True)
      extra_fields.setdefault('is_superuser', True)
 
-    # Varsayılan bir dogum_tarihi ekleyin veya kontrol edin
+   
      if 'dogum_tarihi' not in extra_fields:
-        extra_fields['dogum_tarihi'] = None  # Boş bırakılmasını sağlar
+        extra_fields['dogum_tarihi'] = None 
 
      return self.create_user(kullanici_adi, email, password, **extra_fields)
 
@@ -45,20 +45,20 @@ class Kullanici(AbstractBaseUser, PermissionsMixin):
 
     groups = models.ManyToManyField(
         'auth.Group',
-        related_name='kullanici_groups',  # Çakışmayı önlemek için related_name ekleniyor
+        related_name='kullanici_groups',
         blank=True,
         help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
         verbose_name='groups',
     )
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        related_name='kullanici_permissions',  # Çakışmayı önlemek için related_name ekleniyor
+        related_name='kullanici_permissions',  
         blank=True,
         help_text='Specific permissions for this user.',
         verbose_name='user permissions',
     )
 
-    objects = CustomUserManager()  # Güncellenmiş yöneticiyi burada kullanıyoruz
+    objects = CustomUserManager()  
 
     USERNAME_FIELD = 'kullanici_adi'
     REQUIRED_FIELDS = ['email', 'ad', 'soyad']
@@ -68,10 +68,9 @@ class Kullanici(AbstractBaseUser, PermissionsMixin):
 
 class Etkinlik(models.Model):
     ad = models.CharField(max_length=100)
-    kategori = models.CharField(max_length=50)  # Kategori adı: örneğin, "spor", "teknoloji"
+    kategori = models.CharField(max_length=50) 
     tarih = models.DateField()
     aciklama = models.TextField()
-    # created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
-    # katilimcilar = models.ManyToManyField(User, related_name='katildigi_etkinlikler', blank=True)
+
     def __str__(self):
         return self.ad
