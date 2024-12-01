@@ -12,6 +12,7 @@ from django.contrib import messages
 from .models import Kullanici, Etkinlik
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
+from .forms import EtkinlikForm
 
 # Kullanıcı Girişi
 def login_view(request):
@@ -31,48 +32,58 @@ def register_view(request):
     if request.method == "POST":
         kullanici_adi = request.POST.get("kullanici_adi")
         sifre = request.POST.get("sifre")
-        eposta = request.POST.get("eposta")
+        email = request.POST.get("email")
         ad = request.POST.get("ad")
         soyad = request.POST.get("soyad")
         dogum_tarihi = request.POST.get("dogum_tarihi")
         cinsiyet = request.POST.get("cinsiyet")
         ilgi_alanlari = request.POST.get("ilgi_alanlari")  # Serbest metin olarak alınıyor
+        telefon_no =  request.POST.get("telefon_no") 
+        konum = request.POST.get("konum")
+        profil_fotografi = request.FILES.get("profil_fotografi")
 
         # Kullanıcı adı ve e-posta duplicate kontrolü
         if Kullanici.objects.filter(kullanici_adi=kullanici_adi).exists():
             messages.error(request, "Bu kullanıcı adı zaten kayıtlı.")
             return render(request, 'yazlab/register.html', {
                 'kullanici_adi': kullanici_adi,
-                'eposta': eposta,
+                'email': email,
                 'ad': ad,
                 'soyad': soyad,
                 'dogum_tarihi': dogum_tarihi,
                 'cinsiyet': cinsiyet,
                 'ilgi_alanlari': ilgi_alanlari,
+                'telefon_no': telefon_no,
+                'konum': konum,
             })
 
-        if Kullanici.objects.filter(eposta=eposta).exists():
+        if Kullanici.objects.filter(email=email).exists():
             messages.error(request, "Bu e-posta adresi zaten kayıtlı.")
             return render(request, 'yazlab/register.html', {
                 'kullanici_adi': kullanici_adi,
-                'eposta': eposta,
+                'email': email,
                 'ad': ad,
                 'soyad': soyad,
                 'dogum_tarihi': dogum_tarihi,
                 'cinsiyet': cinsiyet,
                 'ilgi_alanlari': ilgi_alanlari,
+                'telefon_no': telefon_no,
+                'konum': konum,
             })
 
         # Kullanıcı oluşturma
         kullanici = Kullanici.objects.create(
             kullanici_adi=kullanici_adi,
             password=make_password(sifre),
-            eposta=eposta,
+            email=email,
             ad=ad,
             soyad=soyad,
             dogum_tarihi=dogum_tarihi,
             cinsiyet=cinsiyet,
-            ilgi_alanlari=ilgi_alanlari  # İlgi alanlarını kaydediyoruz
+            ilgi_alanlari=ilgi_alanlari,
+            telefon_no=telefon_no,  # Telefon numarası kaydediliyor
+            konum=konum,  # Konum kaydediliyor
+            profil_fotografi=profil_fotografi  # İlgi alanlarını kaydediyoruz
         )
         kullanici.save()
 
@@ -105,28 +116,40 @@ def home_page_view(request):
     return render(request, 'yazlab/home_page.html', {
         'etkinlikler': etkinlikler,
     })
-# Profil Güncelleme (Opsiyonel)
-@login_required
-# def profil_guncelle_view(request):
-#     if request.method == "POST":
-#         ilgi_alani_listesi = request.POST.getlist('ilgi_alanlari')
-#         kullanici = request.user.profil
-#         kullanici.ilgi_alanlari.clear()
-#         for ilgi in ilgi_alani_listesi:
-#             ilgi_alani_obj = IlgiAlani.objects.get(ad=ilgi)
-#             kullanici.ilgi_alanlari.add(ilgi_alani_obj)
-#         kullanici.save()
-#         return redirect('home_page')
-
-#     ilgi_alanlari = IlgiAlani.objects.all()
-#     return render(request, 'yazlab/profil_guncelle.html', {"ilgi_alanlari": ilgi_alanlari})
-
-
-
-def forgot_pass_view(request):
-    return render(request, 'yazlab/forgot_pass.html')
 
 def logout_view(request):
     logout(request)
     messages.success(request, 'Başarıyla çıkış yaptınız.')
     return redirect('login')
+
+@login_required
+def create_event_view(request):
+    if request.method == 'POST':
+        form = EtkinlikForm(request.POST)
+        if form.is_valid():
+            etkinlik = form.save(commit=False)
+            etkinlik.created_by = request.user  # Etkinliği oluşturan kullanıcıyı kaydet
+            etkinlik.save()
+            return redirect('home_page')  # Etkinlik oluşturulduktan sonra ana sayfaya yönlendirme
+    else:
+        form = EtkinlikForm()
+    return render(request, 'yazlab/create_event.html', {'form': form})
+
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.urls import reverse_lazy
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
+    email_template_name = 'password_reset_email.html'
+    subject_template_name = 'password_reset_subject.txt'
+
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        user_model = get_user_model()
+        if not user_model.objects.filter(eposta=email).exists():  # `eposta` alanınızı kontrol edin
+            messages.error(self.request, "Bu e-posta sistemde kayıtlı değil.")
+            return self.form_invalid(form)
+        return super().form_valid(form)

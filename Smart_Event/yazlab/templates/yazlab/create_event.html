@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Etkinlik Oluştur</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffd1dc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        form {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-top: 1.5rem;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .back-button {
+            background-color: #f44336;
+            margin-top: 1rem;
+        }
+        .back-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %}
+        <h1>Yeni Etkinlik Oluştur</h1>
+        {{ form.as_p }}
+        <button type="submit">Oluştur</button>
+    </form>
+    <a href="/home_page" style="text-decoration: none;">
+        <button class="back-button">Geri Dön</button>
+    </a>
+</body>
+</html>
